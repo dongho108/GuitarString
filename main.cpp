@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <vector>
+#include <algorithm>
 using namespace std;
 
 class GuitarString{
@@ -27,6 +28,7 @@ public:
             brand.at(i).push_back(temp1);
             brand.at(i).push_back(temp2);
             brand.at(i).push_back(findBMin(i));
+            
         }
     }
     int findBMin(int i){
@@ -37,6 +39,8 @@ public:
         ea = cutNum * brand.at(i).at(1);
         
         bundle = (cutNum/6+1)*brand.at(i).at(0);
+        
+        
         
         if(bundleEa < ea){
             if(bundleEa < bundle)
@@ -56,13 +60,10 @@ public:
     
     //브랜드의 최소값끼리 비교하기
     void searchMin(){
-        int Min=0;
-        for(int i=0; i<brandNum-1; i++){
-            if(brand.at(i).at(2) < brand.at(i+1).at(2)){
+        int Min = brand.at(0).at(2);
+        for(int i=1; i<brandNum; i++){
+            if(brand.at(i).at(2) < Min)
                 Min = brand.at(i).at(2);
-            }
-            else
-                Min = brand.at(i+1).at(2);
         }
         cout << Min;
     }
