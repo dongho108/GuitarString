@@ -8,13 +8,12 @@
 
 #include <iostream>
 #include <vector>
-#include <algorithm>
 using namespace std;
 
 class GuitarString{
     vector<vector<int> > brand;
     int cutNum, brandNum;
-    
+    int MinB, MinE;
 public:
     GuitarString(int c, int b){
         cutNum = c;
@@ -27,47 +26,74 @@ public:
             cin >> temp1 >> temp2;
             brand.at(i).push_back(temp1);
             brand.at(i).push_back(temp2);
-            brand.at(i).push_back(findBMin(i));
-            
         }
     }
-    int findBMin(int i){
-        int min;
-        int bundleEa, bundle, ea;
-        bundleEa = (cutNum/6 * brand.at(i).at(0) + ((cutNum % 6) * brand.at(i).at(1)));
+    //필요한 기타줄의 개수가 6의 배수인지 확인
+    bool IsMultipleOfSix(){
+        if((cutNum % 6) == 0)
+            return true;
+        else
+            return false;
+    }
+    
+    //묶음의 최소값과 낱개의 최소값 셋팅하기
+    void settingMin(){
+        MinB = brand.at(0).at(0);
+        MinE = brand.at(0).at(1);
+        for(int i=1; i<brand.size(); i++){
+            if(brand.at(i).at(0) < MinB)
+                MinB = brand.at(i).at(0);
+            if(brand.at(i).at(1) < MinE)
+                MinE = brand.at(i).at(1);
+        }
+    }
+    
+    //효율적인 구매비용 구하기
+    int Cost(){
+        int Bundle, Ea, BundleEa, OverBundle;
+        settingMin();
         
-        ea = cutNum * brand.at(i).at(1);
+        Bundle = MinB * (cutNum / 6);
+        Ea = MinE * cutNum;
+        BundleEa = MinB * (cutNum / 6) + MinE * (cutNum % 6);
+        OverBundle = MinB * (cutNum/6 + 1);
         
-        bundle = (cutNum/6+1)*brand.at(i).at(0);
-        
-        
-        
-        if(bundleEa < ea){
-            if(bundleEa < bundle)
-                min = bundleEa;
+        if(IsMultipleOfSix() == true){
+            if(Bundle < Ea)
+                return Bundle;
             else
-                min = bundle;
+                return Ea;
         }
         else{
-            if(ea < bundle)
-                min = ea;
-            else
-                min = bundle;
+            if(cutNum < 6){
+                if(MinB < Ea)
+                    return MinB;
+                else
+                    return Ea;
+            }
+            if(BundleEa< OverBundle){
+                if(BundleEa < Ea)
+                    return BundleEa;
+                else{
+                    if(Ea < OverBundle)
+                        return Ea;
+                    else
+                        return OverBundle;
+                }
+            }
+            else{
+                if(OverBundle < Ea)
+                    return OverBundle;
+                else{
+                    if(Ea < BundleEa)
+                        return Ea;
+                    else
+                        return BundleEa;
+                }
+
+            }
         }
-        
-        return min;
     }
-    
-    //브랜드의 최소값끼리 비교하기
-    void searchMin(){
-        int Min = brand.at(0).at(2);
-        for(int i=1; i<brandNum; i++){
-            if(brand.at(i).at(2) < Min)
-                Min = brand.at(i).at(2);
-        }
-        cout << Min;
-    }
-    
 };
 
 int main() {
@@ -75,5 +101,5 @@ int main() {
     cin >> cutNum >> brandNum;
     
     GuitarString g(cutNum, brandNum);
-    g.searchMin();
+    cout << g.Cost();
 }
